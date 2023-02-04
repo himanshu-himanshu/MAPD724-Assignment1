@@ -12,6 +12,44 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State var userMoney = "1000"
+    @State var currentBet = "100"
+    @State var jackpot = "500"
+    @State var imageOne = "1"
+    @State var imageTwo = "4"
+    @State var imageThree = "9"
+    @State var isSpinDisabled = false
+    @State var showAlert = false
+    @State var showNoMoneyAlert = false
+    
+    func generateRandom() -> String {
+        let randomImage = arc4random_uniform(9) + 1;
+        return String(randomImage)
+    }
+    
+    func setRandomImages() {
+        self.imageOne = generateRandom()
+        self.imageTwo = generateRandom()
+        self.imageThree = generateRandom()
+    }
+    
+    func resetGame() {
+        self.jackpot = "500"
+        self.userMoney = "1000"
+        self.currentBet = "100"
+        self.imageOne = "1"
+        self.imageTwo = "1"
+        self.imageThree = "1"
+        isSpinDisabled = false
+    }
+    
+    func checkUsersMoney() {
+        if(Int(self.userMoney) == 0) {
+            self.showNoMoneyAlert = true
+        }
+    }
+    
     var body: some View {
         ZStack {
             VStack {
@@ -23,10 +61,10 @@ struct ContentView: View {
                         
                         // HStack containing three images for the slot machine
                         HStack(spacing:10) {
-                            Image("7").resizable().aspectRatio(contentMode: .fit).cornerRadius(/*@START_MENU_TOKEN@*/5.0/*@END_MENU_TOKEN@*/)
-                            Image("7").resizable().aspectRatio(contentMode: .fit)
+                            Image(self.imageOne).resizable().aspectRatio(contentMode: .fit).cornerRadius(/*@START_MENU_TOKEN@*/5.0/*@END_MENU_TOKEN@*/)
+                            Image(self.imageTwo).resizable().aspectRatio(contentMode: .fit)
                                 .cornerRadius(/*@START_MENU_TOKEN@*/5.0/*@END_MENU_TOKEN@*/)
-                            Image("7").resizable().aspectRatio(contentMode: .fit)
+                            Image(self.imageThree).resizable().aspectRatio(contentMode: .fit)
                                 .cornerRadius(/*@START_MENU_TOKEN@*/5.0/*@END_MENU_TOKEN@*/)
                         }
                         .padding(.all, 20)
@@ -41,7 +79,7 @@ struct ContentView: View {
                                     .font(.title3)
                                     .fontWeight(.semibold)
                                     .foregroundColor(Color.white)
-                                Text("💰 1000")
+                                Text("💰" + userMoney)
                                     .fontWeight(.bold)
                                     .foregroundColor(Color.orange)
                             }
@@ -56,7 +94,7 @@ struct ContentView: View {
                                     .font(.title3)
                                     .fontWeight(.semibold)
                                     .foregroundColor(Color.white)
-                                Text("💵 1000")
+                                Text("💵" + currentBet)
                                     .fontWeight(.bold)
                                     .foregroundColor(Color.yellow)
                             }
@@ -70,7 +108,7 @@ struct ContentView: View {
                                     .font(.title3)
                                     .fontWeight(.semibold)
                                     .foregroundColor(Color.white)
-                                Text("💰 500")
+                                Text("💰" + jackpot)
                                     .fontWeight(.bold)
                                     .foregroundColor(Color(hue: 0.173, saturation: 0.473, brightness: 1.0))
                             }
@@ -88,16 +126,23 @@ struct ContentView: View {
                 // Spin button to start the slot machine game
                 Spacer()
                 Button(action: {
-                    
+                    self.userMoney = String(Int(self.userMoney)! - Int(self.currentBet)!)
+                    if(userMoney < currentBet) {
+                        //self.showAlert = true
+                        isSpinDisabled = true
+                    }
+                    setRandomImages()
+                    checkUsersMoney()
                 }, label: {
                     Image("sp").resizable().frame(width: 120, height: 120).aspectRatio(contentMode: .fit)
                 })
+                .disabled(self.isSpinDisabled)
                 Spacer()
                 
                 // HStack conating two buttons: Reset and Quit
                 HStack(spacing: 120) {
                     Button(action: {
-                        
+                        resetGame()
                     }, label: {
                         Image("rst").resizable().frame(width: 30, height: 30).aspectRatio(contentMode: .fit)
                     })
@@ -114,6 +159,11 @@ struct ContentView: View {
 
         }
         .background(.teal)
+        .alert("Important message", isPresented: self.$showAlert) {
+            Button("OK", role: .cancel) { }
+        }.alert("You lost all your money!", isPresented: self.$showNoMoneyAlert) {
+            Button("OK", role: .cancel) { }
+        }
     }
 }
 
