@@ -15,33 +15,41 @@ struct ContentView: View {
     
     @State var userMoney = "1000"
     @State var currentBet = "100"
+    @State var newBet = ""
     @State var jackpot = "500"
-    @State var imageOne = "1"
-    @State var imageTwo = "4"
-    @State var imageThree = "9"
+    @State var imageOne = "0"
+    @State var imageTwo = "0"
+    @State var imageThree = "0"
     @State var isSpinDisabled = false
     @State var showAlert = false
     @State var showNoMoneyAlert = false
+    @State var showBetAlert = false
+    @State var showEmptyBetAlert = false
     
     func generateRandom() -> String {
-        let randomImage = arc4random_uniform(9) + 1;
+        let randomImage = arc4random_uniform(8) + 0;
         return String(randomImage)
     }
     
     func setRandomImages() {
+        if(self.currentBet > self.userMoney) {
+            return
+        }
         self.imageOne = generateRandom()
         self.imageTwo = generateRandom()
         self.imageThree = generateRandom()
+        self.userMoney = String(Int(self.userMoney)! - Int(self.currentBet)!)
     }
     
     func resetGame() {
         self.jackpot = "500"
         self.userMoney = "1000"
         self.currentBet = "100"
-        self.imageOne = "1"
-        self.imageTwo = "1"
-        self.imageThree = "1"
-        isSpinDisabled = false
+        self.imageOne = "0"
+        self.imageTwo = "0"
+        self.imageThree = "0"
+        self.isSpinDisabled = false
+        self.showBetAlert = false
     }
     
     func checkUsersMoney() {
@@ -50,10 +58,15 @@ struct ContentView: View {
         }
     }
     
+    func setNewBet() {
+        self.currentBet = self.newBet
+        self.newBet = ""
+    }
+    
     var body: some View {
         ZStack {
             VStack {
-                Image("slot").resizable().aspectRatio(contentMode: .fit).padding(.all, 30.0)
+                Image("slot").resizable().aspectRatio(contentMode: .fit).padding(.bottom, 50.0).padding(.horizontal, 30)
                 Spacer()
                 
                 ZStack {
@@ -99,6 +112,10 @@ struct ContentView: View {
                                     .foregroundColor(Color.yellow)
                             }
                             .frame(minWidth: 0, maxWidth: .infinity)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                self.showBetAlert = true
+                            }
                             .padding()
                             .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color(hue: 0.843, saturation: 0.991, brightness: 0.68)/*@END_MENU_TOKEN@*/)
                             .cornerRadius(/*@START_MENU_TOKEN@*/8.0/*@END_MENU_TOKEN@*/)
@@ -126,7 +143,9 @@ struct ContentView: View {
                 // Spin button to start the slot machine game
                 Spacer()
                 Button(action: {
-                    self.userMoney = String(Int(self.userMoney)! - Int(self.currentBet)!)
+                    if(self.currentBet <= "0") {
+                        self.showEmptyBetAlert = true
+                    }
                     if(userMoney < currentBet) {
                         //self.showAlert = true
                         isSpinDisabled = true
@@ -161,8 +180,19 @@ struct ContentView: View {
         .background(.teal)
         .alert("Important message", isPresented: self.$showAlert) {
             Button("OK", role: .cancel) { }
-        }.alert("You lost all your money!", isPresented: self.$showNoMoneyAlert) {
-            Button("OK", role: .cancel) { }
+        }.alert(isPresented: $showNoMoneyAlert) {
+            Alert(
+                title: Text("Money Lost!"),
+                message: Text("You don't have enough money")
+            )
+        }.alert("Enter new bet", isPresented: self.$showBetAlert) {
+            TextField("Bet", text: $newBet)
+            Button("Update", action: setNewBet)
+        }.alert(isPresented: $showEmptyBetAlert) {
+            Alert(
+                title: Text("Warning"),
+                message: Text("Place some bet to play")
+            )
         }
     }
 }
