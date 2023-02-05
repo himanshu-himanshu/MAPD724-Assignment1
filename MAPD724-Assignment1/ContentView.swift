@@ -2,17 +2,18 @@
 
 //  Authors: Himanshu (301296001) & Gurminder (301294300)
 //  Subject: MAPD724 Advanced iOS Development
-//  Assignment: 1 Part 1
+//  Assignment: 1 Part 2
 
-//  Task: Slot Machine App UI
+//  Task: Slot Machine App Functionality
 //  About App: Create the User Interface for Slot Machine game using SwiftUI that contains three images, spin button, reset and quit buttons also labels stating money, bet and current jackpot.
 
-//  Date modified: 21/01/2023
+//  Date modified: 04/02/2023
 
 import SwiftUI
 
 struct ContentView: View {
     
+    /** Global Variables */
     @State var userMoney = "1000"
     @State var currentBet = "100"
     @State var newBet = ""
@@ -25,22 +26,51 @@ struct ContentView: View {
     @State var showNoMoneyAlert = false
     @State var showBetAlert = false
     @State var showEmptyBetAlert = false
+    @State var showJackpotAlert = false
     
+    /** Function to generate random numbers */
     func generateRandom() -> String {
-        let randomImage = arc4random_uniform(8) + 0;
+        let randomImage = arc4random_uniform(9) + 1;
         return String(randomImage)
     }
     
+    /** Set images according to random generated numbers */
     func setRandomImages() {
         if(self.currentBet > self.userMoney) {
             return
         }
-        self.imageOne = generateRandom()
-        self.imageTwo = generateRandom()
-        self.imageThree = generateRandom()
-        self.userMoney = String(Int(self.userMoney)! - Int(self.currentBet)!)
+        let randomOne = generateRandom()
+        let randomTwo = generateRandom()
+        let randomThree = generateRandom()
+        self.imageOne = randomOne
+        self.imageTwo = randomTwo
+        self.imageThree = randomThree
+        checkWinOrLoss(randomOne: randomOne, randomTwo: randomTwo, randomThree: randomThree)
     }
     
+    /** Check if player is winning or loosing */
+    func checkWinOrLoss(randomOne:String, randomTwo:String, randomThree:String) {
+    
+        if(randomOne == "9" || randomTwo == "9" || randomThree == "9") {
+            // Checking blanks, '9' = Blank
+            self.userMoney = String(Int(self.userMoney)! - Int(self.currentBet)!)
+        } else {
+            if(randomOne == randomTwo && randomTwo == randomThree) {
+                self.userMoney = String(Int(self.userMoney)! + ( Int(self.jackpot)! + Int(self.currentBet)!))
+                self.showJackpotAlert = true
+                self.jackpot = "1000"
+                print(self.currentBet)
+            } else if(randomOne == randomTwo || randomTwo == randomThree || randomOne == randomThree) {
+                self.userMoney = String(Int(self.userMoney)! + ( 5 * Int(self.currentBet)!))
+            }
+            
+            if(randomOne != randomTwo && randomTwo != randomThree) {
+                self.userMoney = String(Int(self.userMoney)! - Int(self.currentBet)!)
+            }
+        }
+    }
+    
+    /** Function to reset the game */
     func resetGame() {
         self.jackpot = "500"
         self.userMoney = "1000"
@@ -50,14 +80,20 @@ struct ContentView: View {
         self.imageThree = "0"
         self.isSpinDisabled = false
         self.showBetAlert = false
+        self.showNoMoneyAlert = false
+        self.showBetAlert = false
+        self.showEmptyBetAlert = false
+        self.showJackpotAlert = false
     }
     
+    /** Check users money */
     func checkUsersMoney() {
         if(Int(self.userMoney) == 0) {
             self.showNoMoneyAlert = true
         }
     }
     
+    /** Function to set new bet */
     func setNewBet() {
         self.currentBet = self.newBet
         self.newBet = ""
@@ -66,7 +102,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             VStack {
-                Image("slot").resizable().aspectRatio(contentMode: .fit).padding(.bottom, 50.0).padding(.horizontal, 30)
+                Image("slot").resizable().aspectRatio(contentMode: .fit).padding(.bottom, 30.0).padding(.horizontal, 30)
                 Spacer()
                 
                 ZStack {
@@ -146,12 +182,15 @@ struct ContentView: View {
                     if(self.currentBet <= "0") {
                         self.showEmptyBetAlert = true
                     }
+                    if(self.userMoney <= "0" ) {
+                        self.showNoMoneyAlert = true
+                    }
                     if(userMoney < currentBet) {
                         //self.showAlert = true
                         isSpinDisabled = true
                     }
                     setRandomImages()
-                    checkUsersMoney()
+                    //checkUsersMoney()
                 }, label: {
                     Image("sp").resizable().frame(width: 120, height: 120).aspectRatio(contentMode: .fit)
                 })
@@ -172,10 +211,8 @@ struct ContentView: View {
                         Image("close").resizable().frame(width: 30, height: 30).aspectRatio(contentMode: .fit)
                     })
                 }
-                
             }
             .padding()
-
         }
         .background(.teal)
         .alert("Important message", isPresented: self.$showAlert) {
@@ -192,6 +229,11 @@ struct ContentView: View {
             Alert(
                 title: Text("Warning"),
                 message: Text("Place some bet to play")
+            )
+        }.alert(isPresented: $showJackpotAlert) {
+            Alert(
+                title: Text("Jackpot!"),
+                message: Text("You wont the jackpot!!!!")
             )
         }
     }
