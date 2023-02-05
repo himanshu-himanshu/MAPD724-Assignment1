@@ -27,6 +27,7 @@ struct ContentView: View {
     @State var showBetAlert = false
     @State var showEmptyBetAlert = false
     @State var showJackpotAlert = false
+    @State var showExitAlert = false
     
     /** Function to generate random numbers */
     func generateRandom() -> String {
@@ -84,6 +85,7 @@ struct ContentView: View {
         self.showBetAlert = false
         self.showEmptyBetAlert = false
         self.showJackpotAlert = false
+        self.showExitAlert = false
     }
     
     /** Check users money */
@@ -97,6 +99,11 @@ struct ContentView: View {
     func setNewBet() {
         self.currentBet = self.newBet
         self.newBet = ""
+    }
+    
+    /** Function to exit game */
+    func exitGame() {
+        exit(0)
     }
     
     var body: some View {
@@ -206,7 +213,7 @@ struct ContentView: View {
                     })
                     
                     Button(action: {
-                        
+                        self.showExitAlert = true
                     }, label: {
                         Image("close").resizable().frame(width: 30, height: 30).aspectRatio(contentMode: .fit)
                     })
@@ -235,6 +242,9 @@ struct ContentView: View {
                 title: Text("Jackpot!"),
                 message: Text("You wont the jackpot!!!!")
             )
+        }.alert("Do you want to exit game?", isPresented: self.$showExitAlert) {
+            Button("No", role: .cancel) {}
+            Button("Yes", action: exitGame)
         }
     }
 }
