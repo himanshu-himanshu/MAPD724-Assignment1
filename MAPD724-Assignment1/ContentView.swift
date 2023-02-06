@@ -14,10 +14,10 @@ import SwiftUI
 struct ContentView: View {
     
     /** Global Variables */
-    @State var userMoney = "1000"
-    @State var currentBet = "100"
+    @State var userMoney = 1000
+    @State var currentBet = 100
     @State var newBet = ""
-    @State var jackpot = "500"
+    @State var jackpot = 500
     @State var imageOne = "0"
     @State var imageTwo = "0"
     @State var imageThree = "0"
@@ -54,28 +54,28 @@ struct ContentView: View {
     
         if(randomOne == "9" || randomTwo == "9" || randomThree == "9") {
             // Checking blanks, '9' = Blank
-            self.userMoney = String(Int(self.userMoney)! - Int(self.currentBet)!)
+            self.userMoney = self.userMoney - self.currentBet
         } else {
             if(randomOne == randomTwo && randomTwo == randomThree) {
-                self.userMoney = String(Int(self.userMoney)! + ( Int(self.jackpot)! + Int(self.currentBet)!))
+                self.userMoney = self.userMoney + self.jackpot + self.currentBet
                 self.showJackpotAlert = true
-                self.jackpot = "1000"
+                self.jackpot = 1000
                 print(self.currentBet)
             } else if(randomOne == randomTwo || randomTwo == randomThree || randomOne == randomThree) {
-                self.userMoney = String(Int(self.userMoney)! + ( 5 * Int(self.currentBet)!))
+                self.userMoney = self.userMoney + (5 * self.currentBet)
             }
             
             if(randomOne != randomTwo && randomTwo != randomThree) {
-                self.userMoney = String(Int(self.userMoney)! - Int(self.currentBet)!)
+                self.userMoney = self.userMoney - self.currentBet
             }
         }
     }
     
     /** Function to reset the game */
     func resetGame() {
-        self.jackpot = "500"
-        self.userMoney = "1000"
-        self.currentBet = "100"
+        self.jackpot = 500
+        self.userMoney = 1000
+        self.currentBet = 100
         self.imageOne = "0"
         self.imageTwo = "0"
         self.imageThree = "0"
@@ -97,13 +97,37 @@ struct ContentView: View {
     
     /** Function to set new bet */
     func setNewBet() {
-        self.currentBet = self.newBet
+        if(self.newBet == "" || self.newBet == " ") {
+            self.currentBet = 0
+        } else {
+            self.currentBet = Int(self.newBet)!
+        }
         self.newBet = ""
+        self.isSpinDisabled = false
     }
     
     /** Function to exit game */
     func exitGame() {
         exit(0)
+    }
+    
+    func spinLogic() {
+
+        if(self.currentBet <= 0) {
+            self.showEmptyBetAlert = true
+            return
+        }
+        
+        if(self.userMoney <= 0 ) {
+            self.showNoMoneyAlert = true
+        }
+        
+        if(currentBet > userMoney) {
+            print(userMoney, currentBet)
+            self.isSpinDisabled = true
+        }
+        
+        setRandomImages()
     }
     
     var body: some View {
@@ -135,7 +159,7 @@ struct ContentView: View {
                                     .font(.title3)
                                     .fontWeight(.semibold)
                                     .foregroundColor(Color.white)
-                                Text("💰" + userMoney)
+                                Text("💰" + String(userMoney))
                                     .fontWeight(.bold)
                                     .foregroundColor(Color.orange)
                             }
@@ -150,15 +174,11 @@ struct ContentView: View {
                                     .font(.title3)
                                     .fontWeight(.semibold)
                                     .foregroundColor(Color.white)
-                                Text("💵" + currentBet)
+                                Text("💵" + String(currentBet))
                                     .fontWeight(.bold)
                                     .foregroundColor(Color.yellow)
                             }
                             .frame(minWidth: 0, maxWidth: .infinity)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                self.showBetAlert = true
-                            }
                             .padding()
                             .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color(hue: 0.843, saturation: 0.991, brightness: 0.68)/*@END_MENU_TOKEN@*/)
                             .cornerRadius(/*@START_MENU_TOKEN@*/8.0/*@END_MENU_TOKEN@*/)
@@ -168,7 +188,7 @@ struct ContentView: View {
                                     .font(.title3)
                                     .fontWeight(.semibold)
                                     .foregroundColor(Color.white)
-                                Text("💰" + jackpot)
+                                Text("💰" + String(jackpot))
                                     .fontWeight(.bold)
                                     .foregroundColor(Color(hue: 0.173, saturation: 0.473, brightness: 1.0))
                             }
@@ -186,18 +206,7 @@ struct ContentView: View {
                 // Spin button to start the slot machine game
                 Spacer()
                 Button(action: {
-                    if(self.currentBet <= "0") {
-                        self.showEmptyBetAlert = true
-                    }
-                    if(self.userMoney <= "0" ) {
-                        self.showNoMoneyAlert = true
-                    }
-                    if(userMoney < currentBet) {
-                        //self.showAlert = true
-                        isSpinDisabled = true
-                    }
-                    setRandomImages()
-                    //checkUsersMoney()
+                   spinLogic()
                 }, label: {
                     Image("sp").resizable().frame(width: 120, height: 120).aspectRatio(contentMode: .fit)
                 })
@@ -205,12 +214,19 @@ struct ContentView: View {
                 Spacer()
                 
                 // HStack conating two buttons: Reset and Quit
-                HStack(spacing: 120) {
+                HStack(spacing: 60) {
                     Button(action: {
                         resetGame()
                     }, label: {
                         Image("rst").resizable().frame(width: 30, height: 30).aspectRatio(contentMode: .fit)
                     })
+                    
+                    Button(action: {
+                        self.showBetAlert = true
+                    }, label: {
+                        Image("dlr").resizable().frame(width: 6200, height: 60).aspectRatio(contentMode: .fit).background(.clear)
+                    })
+                    
                     
                     Button(action: {
                         self.showExitAlert = true
@@ -232,11 +248,8 @@ struct ContentView: View {
         }.alert("Enter new bet", isPresented: self.$showBetAlert) {
             TextField("Bet", text: $newBet)
             Button("Update", action: setNewBet)
-        }.alert(isPresented: $showEmptyBetAlert) {
-            Alert(
-                title: Text("Warning"),
-                message: Text("Place some bet to play")
-            )
+        }.alert("Place some bet to play", isPresented: self.$showEmptyBetAlert) {
+            Button("Ok", role: .cancel ,action: {})
         }.alert(isPresented: $showJackpotAlert) {
             Alert(
                 title: Text("Jackpot!"),
