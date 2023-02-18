@@ -15,7 +15,7 @@ import SwiftUI
 struct MAPD724_Assignment1App: App {
     var body: some Scene {
         WindowGroup {
-           InfoView()
+           ContentView()
         }
     }
 }

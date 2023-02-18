@@ -14,33 +14,52 @@ import SwiftUI
 struct InfoView: View {
     var body: some View {
         ZStack {
+            
+            LinearGradient(colors: [Color.teal, Color.green], startPoint: .topLeading, endPoint: .bottomTrailing).edgesIgnoringSafeArea(.all)
+            
             VStack {
+                Image("slot").resizable().aspectRatio(contentMode: .fit).padding(.vertical, 10.0).padding(.horizontal, 90)
                 VStack(spacing: 10) {
-                    Text("***How to play***")
-                        .fontWeight(.semibold)
-                        .foregroundColor(Color.black)
-                        .font(.system(size: 24))
+                    
+                    Text("How to play")
+                        .font(.system(size: 28, weight: .medium, design: .default))
+                        .foregroundColor(.white)
+                        .padding(.bottom, 20)
+  
                     Text("1. Place your bet using coin button as without a bet player cannot play the game.")
-                        .foregroundColor(Color.white)
+                       
                     Text("2. Click on spin button to start the reels. In order to win, 3 identical symbols must match however you also get some prize if you don't have any blank symbols.")
-                        .foregroundColor(Color.white)
+   
                 }
-                .padding(.vertical, 10)
+                .padding(.vertical, 20)
                 .padding(.horizontal, 10)
                 
                 VStack(spacing: 10) {
-                    Text("***Winning Combinations***")
-                        .fontWeight(.semibold)
-                        .foregroundColor(Color.black)
-                        .font(.system(size: 24))
-                    Text("1. Place your bet using coin button as without a bet player cannot play the game.")
-                        .foregroundColor(Color.white)
-                    Text("2. Click on spin button to start the reels. In order to win, 3 identical symbols must match however you also get some prize if you don't have any blank symbols.")
-                        .foregroundColor(Color.white)
+                    Text("Winning Combinations")
+                        .font(.system(size: 28, weight: .medium, design: .default))
+                        .foregroundColor(.white)
+                        .padding(.bottom, 20)
+                    
+                    VStack(spacing: 10) {
+                        HStack {
+                            Text("Three identical symbols -> Jackpot 🧨")
+                                .font(.system(size: 18,weight: .medium, design: .default))
+                        }
+                        
+                        HStack {
+                            Text("Two identical symbols -> Bet * 10 💰")
+                                .font(.system(size: 18,weight: .medium, design: .default))
+                        }
+                        HStack {
+                            Text("No Blanks -> Bet * 5 💵")
+                                .font(.system(size: 18,weight: .medium, design: .default))
+                        }
+                    }
+                   
+                       
                 }
-                .padding(.vertical, 10)
-                .padding(.horizontal, 10)
-                
+                .padding(.vertical, 20)
+                Spacer()
             }
         }
         .frame(
@@ -50,7 +69,6 @@ struct InfoView: View {
               maxHeight: .infinity,
               alignment: .topLeading
             )
-        .background(.gray)
     }
 }
 
@@ -105,11 +123,11 @@ struct ContentView: View {
                 self.jackpot = 1000
                 print(self.currentBet)
             } else if(randomOne == randomTwo || randomTwo == randomThree || randomOne == randomThree) {
-                self.userMoney = self.userMoney + (5 * self.currentBet)
+                self.userMoney = self.userMoney + (10 * self.currentBet)
             }
             
             if(randomOne != randomTwo && randomTwo != randomThree) {
-                self.userMoney = self.userMoney - self.currentBet
+                self.userMoney = self.userMoney + (5 * self.currentBet)
             }
         }
     }
