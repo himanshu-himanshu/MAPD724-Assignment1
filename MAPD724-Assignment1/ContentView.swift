@@ -11,6 +11,49 @@
 
 import SwiftUI
 
+struct InfoView: View {
+    var body: some View {
+        ZStack {
+            VStack {
+                VStack(spacing: 10) {
+                    Text("***How to play***")
+                        .fontWeight(.semibold)
+                        .foregroundColor(Color.black)
+                        .font(.system(size: 24))
+                    Text("1. Place your bet using coin button as without a bet player cannot play the game.")
+                        .foregroundColor(Color.white)
+                    Text("2. Click on spin button to start the reels. In order to win, 3 identical symbols must match however you also get some prize if you don't have any blank symbols.")
+                        .foregroundColor(Color.white)
+                }
+                .padding(.vertical, 10)
+                .padding(.horizontal, 10)
+                
+                VStack(spacing: 10) {
+                    Text("***Winning Combinations***")
+                        .fontWeight(.semibold)
+                        .foregroundColor(Color.black)
+                        .font(.system(size: 24))
+                    Text("1. Place your bet using coin button as without a bet player cannot play the game.")
+                        .foregroundColor(Color.white)
+                    Text("2. Click on spin button to start the reels. In order to win, 3 identical symbols must match however you also get some prize if you don't have any blank symbols.")
+                        .foregroundColor(Color.white)
+                }
+                .padding(.vertical, 10)
+                .padding(.horizontal, 10)
+                
+            }
+        }
+        .frame(
+              minWidth: 0,
+              maxWidth: .infinity,
+              minHeight: 0,
+              maxHeight: .infinity,
+              alignment: .topLeading
+            )
+        .background(.gray)
+    }
+}
+
 struct ContentView: View {
     
     /** Global Variables */
@@ -131,139 +174,174 @@ struct ContentView: View {
     }
     
     var body: some View {
-        ZStack {
-            VStack {
-                Image("slot").resizable().aspectRatio(contentMode: .fit).padding(.bottom, 30.0).padding(.horizontal, 30)
-                Spacer()
-                
-                ZStack {
-                    VStack(spacing:0) {
-                        
-                        // HStack containing three images for the slot machine
-                        HStack(spacing:10) {
-                            Image(self.imageOne).resizable().aspectRatio(contentMode: .fit).cornerRadius(/*@START_MENU_TOKEN@*/5.0/*@END_MENU_TOKEN@*/)
-                            Image(self.imageTwo).resizable().aspectRatio(contentMode: .fit)
-                                .cornerRadius(/*@START_MENU_TOKEN@*/5.0/*@END_MENU_TOKEN@*/)
-                            Image(self.imageThree).resizable().aspectRatio(contentMode: .fit)
-                                .cornerRadius(/*@START_MENU_TOKEN@*/5.0/*@END_MENU_TOKEN@*/)
+        NavigationStack {
+            ZStack {
+                VStack {
+                    Image("slot").resizable().aspectRatio(contentMode: .fit).padding(.bottom, 20.0).padding(.horizontal, 60)
+                    
+                    ZStack {
+                        VStack(spacing:0) {
+                            
+                            // HStack containing three images for the slot machine
+                            HStack(spacing:10) {
+                                Image(self.imageOne).resizable().aspectRatio(contentMode: .fit).cornerRadius(/*@START_MENU_TOKEN@*/5.0/*@END_MENU_TOKEN@*/)
+                                    .frame(
+                                          minWidth: 100,
+                                          maxWidth: 100,
+                                          minHeight: 100,
+                                          maxHeight: 100
+                                        )
+                                Image(self.imageTwo).resizable().aspectRatio(contentMode: .fit)
+                                    .cornerRadius(/*@START_MENU_TOKEN@*/5.0/*@END_MENU_TOKEN@*/)
+                                    .frame(
+                                          minWidth: 100,
+                                          maxWidth: 100,
+                                          minHeight: 100,
+                                          maxHeight: 100
+                                        )
+                                Image(self.imageThree).resizable().aspectRatio(contentMode: .fit)
+                                    .cornerRadius(/*@START_MENU_TOKEN@*/5.0/*@END_MENU_TOKEN@*/)
+                                    .frame(
+                                          minWidth: 100,
+                                          maxWidth: 100,
+                                          minHeight: 100,
+                                          maxHeight: 100
+                                        )
+                            }
+                            .frame(
+                                  minWidth: 0,
+                                  maxWidth: .infinity
+                                )
+                            .padding(.all, 20)
+                            .border(.black, width: 2)
+                            .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color(hue: 0.578, saturation: 1.0, brightness: 0.001)/*@END_MENU_TOKEN@*/)
+                            
+                            // HStack containg labels for game info
+                            HStack(spacing: 4) {
+                                
+                                VStack(spacing:10) {
+                                    Text("Money")
+                                        .font(.title3)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(Color.white)
+                                    Text("💰" + String(userMoney))
+                                        .fontWeight(.bold)
+                                        .foregroundColor(Color.orange)
+                                }
+                                .frame(minWidth: 0, maxWidth: .infinity)
+                                .padding()
+                                .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color(hue: 0.843, saturation: 0.991, brightness: 0.68)/*@END_MENU_TOKEN@*/)
+                                .cornerRadius(/*@START_MENU_TOKEN@*/8.0/*@END_MENU_TOKEN@*/)
+                                
+                                
+                                VStack(spacing:10) {
+                                    Text("Bet")
+                                        .font(.title3)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(Color.white)
+                                    Text("💵" + String(currentBet))
+                                        .fontWeight(.bold)
+                                        .foregroundColor(Color.yellow)
+                                }
+                                .frame(minWidth: 0, maxWidth: .infinity)
+                                .padding()
+                                .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color(hue: 0.843, saturation: 0.991, brightness: 0.68)/*@END_MENU_TOKEN@*/)
+                                .cornerRadius(/*@START_MENU_TOKEN@*/8.0/*@END_MENU_TOKEN@*/)
+                                
+                                VStack(spacing:10) {
+                                    Text("Jackpot")
+                                        .font(.title3)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(Color.white)
+                                    Text("💰" + String(jackpot))
+                                        .fontWeight(.bold)
+                                        .foregroundColor(Color(hue: 0.173, saturation: 0.473, brightness: 1.0))
+                                }
+                                .frame(minWidth: 0, maxWidth: .infinity)
+                                .padding()
+                                .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color(hue: 0.843, saturation: 0.991, brightness: 0.68)/*@END_MENU_TOKEN@*/)
+                                .cornerRadius(/*@START_MENU_TOKEN@*/8.0/*@END_MENU_TOKEN@*/)
+                            }
+                            .padding(.top, 10)
                         }
-                        .padding(.all, 20)
-                        .border(.black, width: 2)
-                        .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color(hue: 0.578, saturation: 1.0, brightness: 0.001)/*@END_MENU_TOKEN@*/)
                         
-                        // HStack containg labels for game info
-                        HStack(spacing: 4) {
-                            
-                            VStack(spacing:10) {
-                                Text("Money")
-                                    .font(.title3)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(Color.white)
-                                Text("💰" + String(userMoney))
-                                    .fontWeight(.bold)
-                                    .foregroundColor(Color.orange)
-                            }
-                            .frame(minWidth: 0, maxWidth: .infinity)
-                            .padding()
-                            .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color(hue: 0.843, saturation: 0.991, brightness: 0.68)/*@END_MENU_TOKEN@*/)
-                            .cornerRadius(/*@START_MENU_TOKEN@*/8.0/*@END_MENU_TOKEN@*/)
-                      
-                            
-                            VStack(spacing:10) {
-                                Text("Bet")
-                                    .font(.title3)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(Color.white)
-                                Text("💵" + String(currentBet))
-                                    .fontWeight(.bold)
-                                    .foregroundColor(Color.yellow)
-                            }
-                            .frame(minWidth: 0, maxWidth: .infinity)
-                            .padding()
-                            .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color(hue: 0.843, saturation: 0.991, brightness: 0.68)/*@END_MENU_TOKEN@*/)
-                            .cornerRadius(/*@START_MENU_TOKEN@*/8.0/*@END_MENU_TOKEN@*/)
-                            
-                            VStack(spacing:10) {
-                                Text("Jackpot")
-                                    .font(.title3)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(Color.white)
-                                Text("💰" + String(jackpot))
-                                    .fontWeight(.bold)
-                                    .foregroundColor(Color(hue: 0.173, saturation: 0.473, brightness: 1.0))
-                            }
-                            .frame(minWidth: 0, maxWidth: .infinity)
-                            .padding()
-                            .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color(hue: 0.843, saturation: 0.991, brightness: 0.68)/*@END_MENU_TOKEN@*/)
-                            .cornerRadius(/*@START_MENU_TOKEN@*/8.0/*@END_MENU_TOKEN@*/)
-                        }
-                        .padding(.vertical)
                     }
+                    .shadow(color: .purple,radius: 10, x: 0, y: 0)
                     
+                    // Spin button to start the slot machine game
+                    Button(action: {
+                        spinLogic()
+                    }, label: {
+                        Image("sp").resizable().frame(width: 120, height: 120).aspectRatio(contentMode: .fit)
+                    })
+                    .disabled(self.isSpinDisabled)
+                    .padding(.vertical, 20)
+                    
+                    
+                    // HStack containing three buttons: Place Bet, Reset and Quit
+                    HStack(spacing: 60) {
+                        Button(action: {
+                            resetGame()
+                        }, label: {
+                            Image("rst").resizable().frame(width: 30, height: 30).aspectRatio(contentMode: .fit)
+                        })
+                        
+                        Button(action: {
+                            self.showBetAlert = true
+                        }, label: {
+                            Image("dlr").resizable().frame(width: 60, height: 60).aspectRatio(contentMode: .fit).background(.clear)
+                        })
+                        
+                        
+                        Button(action: {
+                            self.showExitAlert = true
+                        }, label: {
+                            Image("close").resizable().frame(width: 30, height: 30).aspectRatio(contentMode: .fit)
+                        })
+                    }
+                  
+                    NavigationLink("Info") {
+                        InfoView()
+                    }
+                    .padding(.top, 20)
                 }
-                .shadow(color: .purple,radius: 10, x: 0, y: 0)
-     
-                // Spin button to start the slot machine game
-                Spacer()
-                Button(action: {
-                   spinLogic()
-                }, label: {
-                    Image("sp").resizable().frame(width: 120, height: 120).aspectRatio(contentMode: .fit)
-                })
-                .disabled(self.isSpinDisabled)
-                Spacer()
-                
-                // HStack conating two buttons: Reset and Quit
-                HStack(spacing: 60) {
-                    Button(action: {
-                        resetGame()
-                    }, label: {
-                        Image("rst").resizable().frame(width: 30, height: 30).aspectRatio(contentMode: .fit)
-                    })
-                    
-                    Button(action: {
-                        self.showBetAlert = true
-                    }, label: {
-                        Image("dlr").resizable().frame(width: 6200, height: 60).aspectRatio(contentMode: .fit).background(.clear)
-                    })
-                    
-                    
-                    Button(action: {
-                        self.showExitAlert = true
-                    }, label: {
-                        Image("close").resizable().frame(width: 30, height: 30).aspectRatio(contentMode: .fit)
-                    })
-                }
+                .padding()
             }
-            .padding()
-        }
-        .background(.teal)
-        .alert("Important message", isPresented: self.$showAlert) {
-            Button("OK", role: .cancel) { }
-        }.alert(isPresented: $showNoMoneyAlert) {
-            Alert(
-                title: Text("Money Lost!"),
-                message: Text("You don't have enough money")
-            )
-        }.alert("Enter new bet", isPresented: self.$showBetAlert) {
-            TextField("Bet", text: $newBet)
-            Button("Update", action: setNewBet)
-        }.alert("Place some bet to play", isPresented: self.$showEmptyBetAlert) {
-            Button("Ok", role: .cancel ,action: {})
-        }.alert(isPresented: $showJackpotAlert) {
-            Alert(
-                title: Text("Jackpot!"),
-                message: Text("You wont the jackpot!!!!")
-            )
-        }.alert("Do you want to exit game?", isPresented: self.$showExitAlert) {
-            Button("No", role: .cancel) {}
-            Button("Yes", action: exitGame)
+            .frame(
+                  minWidth: 0,
+                  maxWidth: .infinity,
+                  minHeight: 0,
+                  maxHeight: .infinity,
+                  alignment: .topLeading
+                )
+            .background(.teal)
+            .alert("Important message", isPresented: self.$showAlert) {
+                Button("OK", role: .cancel) { }
+            }.alert(isPresented: $showNoMoneyAlert) {
+                Alert(
+                    title: Text("Money Lost!"),
+                    message: Text("You don't have enough money")
+                )
+            }.alert("Enter new bet", isPresented: self.$showBetAlert) {
+                TextField("Bet", text: $newBet)
+                Button("Update", action: setNewBet)
+            }.alert("Place some bet to play", isPresented: self.$showEmptyBetAlert) {
+                Button("Ok", role: .cancel ,action: {})
+            }.alert(isPresented: $showJackpotAlert) {
+                Alert(
+                    title: Text("Jackpot!"),
+                    message: Text("You wont the jackpot!!!!")
+                )
+            }.alert("Do you want to exit game?", isPresented: self.$showExitAlert) {
+                Button("No", role: .cancel) {}
+                Button("Yes", action: exitGame)
+            }
         }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        InfoView()
     }
 }
