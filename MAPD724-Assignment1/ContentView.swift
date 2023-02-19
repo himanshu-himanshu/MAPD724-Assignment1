@@ -18,7 +18,7 @@ struct InfoView: View {
             LinearGradient(colors: [Color.teal, Color.green], startPoint: .topLeading, endPoint: .bottomTrailing).edgesIgnoringSafeArea(.all)
             
             VStack {
-                Image("slot").resizable().aspectRatio(contentMode: .fit).padding(.vertical, 10.0).padding(.horizontal, 90)
+                Image("slot").resizable().aspectRatio(contentMode: .fit).padding(.horizontal, 90)
                 VStack(spacing: 10) {
                     
                     Text("How to play")
@@ -26,9 +26,11 @@ struct InfoView: View {
                         .foregroundColor(.white)
                         .padding(.bottom, 20)
   
-                    Text("1. Place your bet using coin button as without a bet player cannot play the game.")
+                    Text("1. Place your bet using coin button as without bet player cannot play the game.")
                        
-                    Text("2. Click on spin button to start the reels. In order to win, 3 identical symbols must match however you also get some prize if you don't have any blank symbols.")
+                    Text("2. Bet must be greater than your current money.")
+                    
+                    Text("3. More than one blank will loose amount twice of your bet.")
    
                 }
                 .padding(.vertical, 20)
@@ -47,11 +49,11 @@ struct InfoView: View {
                         }
                         
                         HStack {
-                            Text("Two identical symbols -> Bet * 10 💰")
+                            Text("Two identical symbols -> Bet * 5 💰")
                                 .font(.system(size: 18,weight: .medium, design: .default))
                         }
                         HStack {
-                            Text("No Blanks -> Bet * 5 💵")
+                            Text("No Blanks and One Coin -> Bet * 2 💵")
                                 .font(.system(size: 18,weight: .medium, design: .default))
                         }
                     }
@@ -89,10 +91,12 @@ struct ContentView: View {
     @State var showEmptyBetAlert = false
     @State var showJackpotAlert = false
     @State var showExitAlert = false
+    @State var globalJackpot = 0
+    @State var highestPayout = 0
     
     /** Function to generate random numbers */
     func generateRandom() -> String {
-        let randomImage = arc4random_uniform(9) + 1;
+        let randomImage = arc4random_uniform(10) + 1;
         return String(randomImage)
     }
     
@@ -115,19 +119,44 @@ struct ContentView: View {
     
         if(randomOne == "9" || randomTwo == "9" || randomThree == "9") {
             // Checking blanks, '9' = Blank
-            self.userMoney = self.userMoney - self.currentBet
+            // More than one blank will loose twice of your bet
+            if(randomOne == randomTwo || randomTwo == randomThree || randomThree == randomOne) {
+                self.userMoney = self.userMoney - (self.currentBet * 2)
+            } else {
+                self.userMoney = self.userMoney - self.currentBet
+            }
         } else {
             if(randomOne == randomTwo && randomTwo == randomThree) {
+                if(self.highestPayout == 0) {
+                    self.highestPayout = self.jackpot + self.currentBet
+                } else if (self.highestPayout < (self.jackpot + self.currentBet)) {
+                    self.highestPayout = self.jackpot + self.currentBet
+                }
                 self.userMoney = self.userMoney + self.jackpot + self.currentBet
                 self.showJackpotAlert = true
                 self.jackpot = 1000
                 print(self.currentBet)
+               
             } else if(randomOne == randomTwo || randomTwo == randomThree || randomOne == randomThree) {
-                self.userMoney = self.userMoney + (10 * self.currentBet)
+                self.userMoney = self.userMoney + (5 * self.currentBet)
+                if(self.highestPayout == 0) {
+                    self.highestPayout = 5 * self.currentBet
+                } else if (self.highestPayout < 5 * self.currentBet) {
+                    self.highestPayout = 5 * self.currentBet
+                }
             }
             
             if(randomOne != randomTwo && randomTwo != randomThree) {
-                self.userMoney = self.userMoney + (5 * self.currentBet)
+                if(randomOne == "10" || randomTwo == "10" || randomThree == "10") {
+                    self.userMoney = self.userMoney + (2 * self.currentBet)
+                    if(self.highestPayout == 0) {
+                        self.highestPayout = 2 * self.currentBet
+                    } else if (self.highestPayout < 2 * self.currentBet) {
+                        self.highestPayout = 2 * self.currentBet
+                    }
+                } else {
+                    self.userMoney = self.userMoney - self.currentBet
+                }
             }
         }
     }
@@ -147,6 +176,7 @@ struct ContentView: View {
         self.showEmptyBetAlert = false
         self.showJackpotAlert = false
         self.showExitAlert = false
+        self.highestPayout = 0
     }
     
     /** Check users money */
@@ -199,6 +229,24 @@ struct ContentView: View {
                     
                     ZStack {
                         VStack(spacing:0) {
+                            
+                            HStack(spacing: 40) {
+                                VStack(spacing: 10) {
+                                    Text("Global Jackpot")
+                                        .font(.system(size: 20,weight: .heavy, design: .default))
+                                    Text("⚡️ $" + String(globalJackpot))
+                                        .font(.system(size: 22,weight: .heavy, design: .default))
+                                }
+                                
+                                VStack(spacing: 10) {
+                                    Text("Highest Payout")
+                                        .font(.system(size: 20,weight: .heavy, design: .default))
+                                    Text("💵 $" + String(highestPayout))
+                                        .font(.system(size: 22,weight: .heavy, design: .default))
+                                }
+                            
+                            }
+                            .padding(.bottom, 30)
                             
                             // HStack containing three images for the slot machine
                             HStack(spacing:10) {
