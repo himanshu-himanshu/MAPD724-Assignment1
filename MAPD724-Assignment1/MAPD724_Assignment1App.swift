@@ -10,9 +10,15 @@
 //  Date modified: 21/01/2023
 
 import SwiftUI
+import FirebaseCore
 
 @main
 struct MAPD724_Assignment1App: App {
+    
+    init() {
+        FirebaseApp.configure()
+    }
+    
     var body: some Scene {
         WindowGroup {
            ContentView()

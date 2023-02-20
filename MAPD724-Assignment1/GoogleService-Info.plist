@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>716266316325-i792ajev23jj2qa071app4hd8g5lllfq.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.716266316325-i792ajev23jj2qa071app4hd8g5lllfq</string>
+	<key>API_KEY</key>
+	<string>AIzaSyA-RX_f6yO4Q4TJdeQVSmd-4OFiQaeCwuo</string>
+	<key>GCM_SENDER_ID</key>
+	<string>716266316325</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>ca.centennialcollege.MAPD724-Assignment1</string>
+	<key>PROJECT_ID</key>
+	<string>ios-assignment3-d9ddb</string>
+	<key>STORAGE_BUCKET</key>
+	<string>ios-assignment3-d9ddb.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:716266316325:ios:97bf2476889c4cf0ca95cc</string>
+</dict>
+</plist>

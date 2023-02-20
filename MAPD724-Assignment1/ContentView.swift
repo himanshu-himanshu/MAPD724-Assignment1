@@ -2,16 +2,21 @@
 
 //  Authors: Himanshu (301296001) & Gurminder (301294300)
 //  Subject: MAPD724 Advanced iOS Development
-//  Assignment: 1 Part 2
+//  Assignment: 1 Part 3
 
-//  Task: Slot Machine App Functionality
-//  About App: Create the User Interface for Slot Machine game using SwiftUI that contains three images, spin button, reset and quit buttons also labels stating money, bet and current jackpot.
+//  Task: Slot Implementing Database in Slot Machine App
 
-//  Date modified: 04/02/2023
+//  About App: Add data persistence into your app to save Global Jackpot and the Highest Payout for the user. We are using Firebase to do the job.
+
+//  Date modified: 18/02/2023
 
 import SwiftUI
+import Firebase
+import FirebaseCore
+import FirebaseFirestore
 
 struct InfoView: View {
+
     var body: some View {
         ZStack {
             
@@ -91,8 +96,9 @@ struct ContentView: View {
     @State var showEmptyBetAlert = false
     @State var showJackpotAlert = false
     @State var showExitAlert = false
-    @State var globalJackpot = 0
-    @State var highestPayout = 0
+    //@State var globalJackpot = 0
+    @StateObject var scoreManager = ScoreManager()
+
     
     /** Function to generate random numbers */
     func generateRandom() -> String {
@@ -127,11 +133,16 @@ struct ContentView: View {
             }
         } else {
             if(randomOne == randomTwo && randomTwo == randomThree) {
-                if(self.highestPayout == 0) {
-                    self.highestPayout = self.jackpot + self.currentBet
-                } else if (self.highestPayout < (self.jackpot + self.currentBet)) {
-                    self.highestPayout = self.jackpot + self.currentBet
+                if(scoreManager.highScore == 0) {
+                    scoreManager.highScore = self.jackpot + self.currentBet
+                    scoreManager.saveScoresToFirebase(score: scoreManager.highScore)
+                } else if (scoreManager.highScore < (self.jackpot + self.currentBet)) {
+                    scoreManager.highScore = self.jackpot + self.currentBet
+                    scoreManager.saveScoresToFirebase(score: scoreManager.highScore)
                 }
+                
+                scoreManager.globalJackpot = scoreManager.globalJackpot + self.jackpot + self.currentBet
+                scoreManager.saveJackpotScoresToFirebase()
                 self.userMoney = self.userMoney + self.jackpot + self.currentBet
                 self.showJackpotAlert = true
                 self.jackpot = 1000
@@ -139,20 +150,24 @@ struct ContentView: View {
                
             } else if(randomOne == randomTwo || randomTwo == randomThree || randomOne == randomThree) {
                 self.userMoney = self.userMoney + (5 * self.currentBet)
-                if(self.highestPayout == 0) {
-                    self.highestPayout = 5 * self.currentBet
-                } else if (self.highestPayout < 5 * self.currentBet) {
-                    self.highestPayout = 5 * self.currentBet
+                if(scoreManager.highScore == 0) {
+                    scoreManager.highScore = 5 * self.currentBet
+                    scoreManager.saveScoresToFirebase(score: scoreManager.highScore)
+                } else if (scoreManager.highScore < 5 * self.currentBet) {
+                    scoreManager.highScore = 5 * self.currentBet
+                    scoreManager.saveScoresToFirebase(score: scoreManager.highScore)
                 }
             }
             
             if(randomOne != randomTwo && randomTwo != randomThree) {
                 if(randomOne == "10" || randomTwo == "10" || randomThree == "10") {
                     self.userMoney = self.userMoney + (2 * self.currentBet)
-                    if(self.highestPayout == 0) {
-                        self.highestPayout = 2 * self.currentBet
-                    } else if (self.highestPayout < 2 * self.currentBet) {
-                        self.highestPayout = 2 * self.currentBet
+                    if(scoreManager.highScore == 0) {
+                        scoreManager.highScore = 2 * self.currentBet
+                        scoreManager.saveScoresToFirebase(score: scoreManager.highScore)
+                    } else if (scoreManager.highScore < 2 * self.currentBet) {
+                        scoreManager.highScore = 2 * self.currentBet
+                        scoreManager.saveScoresToFirebase(score: scoreManager.highScore)
                     }
                 } else {
                     self.userMoney = self.userMoney - self.currentBet
@@ -176,7 +191,6 @@ struct ContentView: View {
         self.showEmptyBetAlert = false
         self.showJackpotAlert = false
         self.showExitAlert = false
-        self.highestPayout = 0
     }
     
     /** Check users money */
@@ -234,14 +248,14 @@ struct ContentView: View {
                                 VStack(spacing: 10) {
                                     Text("Global Jackpot")
                                         .font(.system(size: 20,weight: .heavy, design: .default))
-                                    Text("⚡️ $" + String(globalJackpot))
+                                    Text("⚡️ $" + String(scoreManager.globalJackpot))
                                         .font(.system(size: 22,weight: .heavy, design: .default))
                                 }
                                 
                                 VStack(spacing: 10) {
                                     Text("Highest Payout")
                                         .font(.system(size: 20,weight: .heavy, design: .default))
-                                    Text("💵 $" + String(highestPayout))
+                                    Text("💵 $" + String(scoreManager.highScore))
                                         .font(.system(size: 22,weight: .heavy, design: .default))
                                 }
                             
@@ -330,7 +344,6 @@ struct ContentView: View {
                             }
                             .padding(.top, 10)
                         }
-                        
                     }
                     .shadow(color: .purple,radius: 10, x: 0, y: 0)
                     
@@ -369,6 +382,7 @@ struct ContentView: View {
                     NavigationLink("Info") {
                         InfoView()
                     }
+                    .foregroundColor(.black)
                     .padding(.top, 20)
                 }
                 .padding()
@@ -396,7 +410,7 @@ struct ContentView: View {
             }.alert(isPresented: $showJackpotAlert) {
                 Alert(
                     title: Text("Jackpot!"),
-                    message: Text("You wont the jackpot!!!!")
+                    message: Text("You won the jackpot!!!!")
                 )
             }.alert("Do you want to exit game?", isPresented: self.$showExitAlert) {
                 Button("No", role: .cancel) {}
